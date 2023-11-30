@@ -2,21 +2,28 @@ import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { selectCart, addCart } from "../App/cart";
+import { selectCart, addCart, selectExit, closeExist } from "../App/cart";
 import { useSelector, useDispatch } from "react-redux";
-
+import Dialog from "react-native-dialog";
 export default function Detail() {
   const { params } = useRoute();
   const item = params;
   const cart = useSelector(selectCart);
-  console.log(cart);
+  const exist = useSelector(selectExit);
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const addItem = (item) => {
     dispatch(
       addCart({
-        obj: { name: item.name, price: item.price, img: item.img },
+        obj: {
+          name: item.name,
+          price: item.price,
+          img: item.img,
+          count: 1,
+          calPrice: item.price,
+        },
         name: item.name,
       })
     );
@@ -53,7 +60,7 @@ export default function Detail() {
         style={{ borderTopLeftRadius: 40, borderTopRightRadius: 40 }}
         className=" flex-1 -mt-5 py-4 px-3 bg-white"
       >
-        <Text className="text-xl ml-4 font-medium">{item.name}</Text>
+        <Text className="text-xl ml-4 font-medium">{item.name} </Text>
         <Text className="text-base mt-4 px-3">{item.description}</Text>
       </View>
 
@@ -68,6 +75,16 @@ export default function Detail() {
         <Text className="text-base text-gray-600 font-medium">
           {item.price} Kyats
         </Text>
+      </View>
+
+      <View>
+        <Dialog.Container visible={exist}>
+          <Dialog.Title>{item.name}</Dialog.Title>
+          <Dialog.Description>
+            This dish is already exist in your shooping cart
+          </Dialog.Description>
+          <Dialog.Button label="Close" onPress={() => dispatch(closeExist())} />
+        </Dialog.Container>
       </View>
     </View>
   );
